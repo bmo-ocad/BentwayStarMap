@@ -57,8 +57,10 @@
     // Draw at the screen's own sharpness, but no finer than 2x: some phones
     // report 3x, which would mean far more pixels to paint for no visible gain.
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.round(window.innerWidth * dpr);
-    canvas.height = Math.round(window.innerHeight * dpr);
+    // Use the size the canvas actually covers on screen, which on iPhones can
+    // be taller than the browser reports for the page itself.
+    canvas.width = Math.round(canvas.clientWidth * dpr);
+    canvas.height = Math.round(canvas.clientHeight * dpr);
     needsDraw = true;
   }
   window.addEventListener("resize", resize);
@@ -259,15 +261,15 @@
         view.project(cat.east[selected], cat.north[selected], cat.up[selected])) {
       const dpr = canvas.width / canvas.clientWidth;
       x = view.x / dpr; y = view.y / dpr;
-      visible = x > 0 && x < window.innerWidth && y > 0 && y < window.innerHeight;
+      visible = x > 0 && x < canvas.clientWidth && y > 0 && y < canvas.clientHeight;
     }
     infoBox.hidden = !visible;
     if (!visible) return;
     const w = infoBox.offsetWidth, h = infoBox.offsetHeight, gap = 30;
     let left = x + gap;
-    if (left + w > window.innerWidth - 8) left = x - gap - w;   // no room on the right
+    if (left + w > canvas.clientWidth - 8) left = x - gap - w;   // no room on the right
     left = Math.max(8, left);
-    const top = Math.max(8, Math.min(window.innerHeight - h - 8, y - 24));
+    const top = Math.max(8, Math.min(canvas.clientHeight - h - 8, y - 24));
     infoBox.style.transform = "translate(" + Math.round(left) + "px," + Math.round(top) + "px)";
   }
 
