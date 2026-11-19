@@ -1,0 +1,220 @@
+/* The pixel font used for everything shown on the wall. It is stored in the
+   fonts folder, so it works with no internet. */
+@font-face {
+  font-family: "DotGothic16";
+  src: url("../fonts/DotGothic16-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* The colour theme: warm cream. Change these to restyle the whole interface.
+   (The colours drawn on the sky itself are in THEME at the top of js/render.js.) */
+:root {
+  --text: #e4dfd0;         /* main text */
+  --text-bright: #f6f2e6;  /* titles and values */
+  --text-dim: #9a9585;     /* captions */
+  --accent: #d2c8a6;       /* sliders, tick boxes */
+  --line: #3e3b30;         /* borders */
+  --line-bright: rgba(232, 224, 198, 0.65);
+  --surface: #181710;      /* buttons */
+  --surface-hover: #25231a;
+  --field: #0e0d09;        /* text boxes */
+  --panel: rgba(12, 11, 8, 0.94);
+  --box: rgba(8, 8, 6, 0.9);
+}
+
+/* Pure black everywhere: on a projector, anything brighter shows as grey haze. */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  color: var(--text);
+  font: 16px/1.4 -apple-system, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+#sky {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none; /* we handle dragging ourselves */
+}
+#sky.dragging { cursor: grabbing; }
+
+/* Things with class "fades" disappear when nobody is touching the controls. */
+.fades { transition: opacity 0.6s; }
+body.idle .fades { opacity: 0; pointer-events: none; }
+body.idle #sky { cursor: none; }
+
+/* ---- Star info box (part of the wall picture, so it uses the pixel font) ---- */
+#info {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: min(21em, calc(100vw - 16px));
+  box-sizing: border-box;
+  padding: 0.7em 0.9em 0.8em;
+  font-family: "DotGothic16", monospace;
+  font-size: max(16px, 2.1vh);   /* grows with the picture so it reads on a wall */
+  line-height: 1.35;
+  color: var(--text);
+  background: var(--box);
+  border: max(1px, 0.07em) dashed var(--line-bright);
+  pointer-events: none;          /* clicks pass through to the sky... */
+}
+#info[hidden] { display: none; }
+#info-close {                    /* ...except on the close button */
+  position: absolute;
+  top: 0.2em;
+  right: 0.3em;
+  padding: 0 0.3em;
+  font-family: inherit;
+  font-size: 1.35em;
+  line-height: 1.2;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  border-radius: 0;
+  pointer-events: auto;
+  cursor: pointer;
+}
+#info-close:hover { color: var(--text-bright); background: none; }
+#info-title { font-size: 1.35em; color: var(--text-bright); padding-right: 1.2em; }
+#info-sub { color: var(--text-dim); }
+#info-sub:empty { display: none; }
+#info-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.1em 0.9em;
+  margin: 0.5em 0 0;
+}
+#info-facts dt { color: var(--text-dim); }
+#info-facts dd { margin: 0; color: var(--text-bright); }
+#info-blurb {
+  margin: 0.6em 0 0;
+  padding-top: 0.55em;
+  border-top: max(1px, 0.07em) dashed rgba(232, 224, 198, 0.32);
+}
+#info-blurb:empty { display: none; }
+
+/* ---- Status line, top left (pixel font, like the labels) ---- */
+#hud {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  font-family: "DotGothic16", monospace;
+  font-size: 16px;
+  color: var(--text-dim);
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+}
+
+/* ---- Controls (only you look at these, so they use a plain font) ---- */
+#open-settings {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+button:hover { background: var(--surface-hover); }
+
+#panel {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  width: min(340px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+#panel h1 { margin: 0 0 6px; font-size: 20px; color: var(--text-bright); }
+#panel h2 {
+  margin: 18px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+#panel p { margin: 0 0 12px; font-size: 14px; color: var(--text-dim); }
+#panel-note:empty { display: none; }
+#panel-note { color: #f0b46e; }
+#panel label { display: block; margin: 10px 0 0; font-size: 13px; color: var(--text-dim); }
+#panel input[type="number"] {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text-bright);
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+#panel input[type="range"] { display: block; width: 100%; margin: 6px 0 0; accent-color: var(--accent); }
+#panel label.check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+#panel label.check input { margin: 0; accent-color: var(--accent); }
+#locate { margin-top: 10px; width: 100%; }
+.row { display: flex; gap: 10px; margin: 18px 0 12px; }
+.row button { flex: 1; }
+.help { margin-bottom: 0 !important; }
+
+/* ---- Pointer mode ---- */
+#mode-toggle {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+}
+#mode-toggle[hidden], #pointer-settings[hidden], #turn-hint[hidden], #toast[hidden] { display: none; }
+
+/* Short messages, in the pixel font because they can show on the wall. */
+#turn-hint, #toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  padding: 0.5em 0.9em;
+  font-family: "DotGothic16", monospace;
+  font-size: 16px;
+  text-align: center;
+  color: var(--text-bright);
+  background: var(--box);
+  border: 1px dashed var(--line-bright);
+  pointer-events: none;
+}
+#turn-hint { top: 38%; }
+#toast { bottom: 70px; }
+
+#panel select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text-bright);
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+#reset-cal { margin-top: 10px; width: 100%; }
