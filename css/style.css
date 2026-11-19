@@ -20,6 +20,14 @@
   --field: #0e0d09;        /* text boxes */
   --panel: rgba(12, 11, 8, 0.94);
   --box: rgba(8, 8, 6, 0.9);
+
+  /* Gaps from the screen edges. On an iPhone opened from the home screen the
+     page runs under the notch and home bar, so the "safe-area" amounts keep
+     buttons and text clear of them. Elsewhere they are zero. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --edge-left: calc(16px + env(safe-area-inset-left, 0px));
+  --edge-right: calc(16px + env(safe-area-inset-right, 0px));
+  --edge-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Pure black everywhere: on a projector, anything brighter shows as grey haze. */
@@ -103,8 +111,8 @@ body.idle #sky { cursor: none; }
 /* ---- Status line, top left (pixel font, like the labels) ---- */
 #hud {
   position: fixed;
-  left: 16px;
-  top: 12px;
+  left: var(--edge-left);
+  top: calc(12px + var(--safe-top));
   font-family: "DotGothic16", monospace;
   font-size: 16px;
   color: var(--text-dim);
@@ -115,8 +123,8 @@ body.idle #sky { cursor: none; }
 /* ---- Controls (only you look at these, so they use a plain font) ---- */
 #open-settings {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: var(--edge-right);
+  bottom: var(--edge-bottom);
 }
 
 button {
@@ -132,8 +140,8 @@ button:hover { background: var(--surface-hover); }
 
 #panel {
   position: fixed;
-  right: 16px;
-  top: 16px;
+  right: var(--edge-right);
+  top: calc(16px + var(--safe-top));
   width: min(340px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   overflow: auto;
@@ -180,13 +188,13 @@ button:hover { background: var(--surface-hover); }
 /* ---- Pointer mode ---- */
 #mode-toggle {
   position: fixed;
-  left: 16px;
-  bottom: 16px;
+  left: var(--edge-left);
+  bottom: var(--edge-bottom);
 }
-#mode-toggle[hidden], #pointer-settings[hidden], #turn-hint[hidden], #toast[hidden] { display: none; }
+#mode-toggle[hidden], #pointer-settings[hidden], #toast[hidden] { display: none; }
 
 /* Short messages, in the pixel font because they can show on the wall. */
-#turn-hint, #toast {
+#toast {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
@@ -201,8 +209,7 @@ button:hover { background: var(--surface-hover); }
   border: 1px dashed var(--line-bright);
   pointer-events: none;
 }
-#turn-hint { top: 38%; }
-#toast { bottom: 70px; }
+#toast { bottom: calc(54px + var(--edge-bottom)); }
 
 #panel select {
   display: block;

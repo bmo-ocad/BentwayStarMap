@@ -4,6 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>Live Star Map</title>
+
+  <!-- Lets iPhones add this page to the home screen and open it without the
+       browser bars. "Star Map" is the name shown under the icon. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Star Map">
+  <meta name="theme-color" content="#000000">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-60.png">
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -25,7 +36,6 @@
 
   <!-- Switches between Window mode and Pointer mode. Only shown on devices with motion sensors. -->
   <button id="mode-toggle" class="fades" hidden>Pointer mode</button>
-  <div id="turn-hint" hidden>Turn your phone sideways</div>
   <div id="toast" hidden></div>
 
   <!-- Settings panel. Each control's id matches the setting it changes in js/main.js. -->

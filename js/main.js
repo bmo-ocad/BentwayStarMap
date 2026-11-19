@@ -166,12 +166,10 @@
       setTimeout(function () {
         if (pointerOn && !gotReading) { stopPointer(); toast("No motion sensor found on this device."); }
       }, 2500);
-      // Where the browser allows it (Android), go fullscreen and hold the
-      // screen sideways so tilting the phone can't flip the picture.
-      if (s.aim === "back" && document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().then(function () {
-          if (screen.orientation && screen.orientation.lock) return screen.orientation.lock("landscape");
-        }).catch(function () {});
+      // Where the browser allows it (Android), hide the browser bars.
+      // Upright or sideways both work, so the screen is not locked either way.
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(function () {});
       }
     });
   }
@@ -179,18 +177,14 @@
     StarMap.pointerMode.stop();
     pointerOn = false;
     s.pitch = clamp(s.pitch, -30, 90);
-    if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch (e) {} }
     updateModeUi();
     changed();
   }
   function updateModeUi() {
     modeButton.textContent = pointerOn ? "Window mode" : "Pointer mode";
-    // iPhones cannot be locked sideways by a web page, so ask instead.
-    $("turn-hint").hidden = !(pointerOn && s.aim === "back" && window.innerHeight > window.innerWidth);
     needsDraw = true;
   }
   modeButton.addEventListener("click", function () { if (pointerOn) stopPointer(); else startPointer(); });
-  window.addEventListener("resize", updateModeUi);
   $("reset-cal").addEventListener("click", function () {
     s.yawOffset = 0;
     if (pointerOn) applyAim();
