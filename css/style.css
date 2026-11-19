@@ -21,12 +21,13 @@
   --panel: rgba(12, 11, 8, 0.94);
   --box: rgba(8, 8, 6, 0.9);
 
-  /* Gaps from the screen edges. The page deliberately fills the whole
-     screen, notch included, so these are plain fixed gaps. */
-  --safe-top: 0px;
-  --edge-left: 16px;
-  --edge-right: 16px;
-  --edge-bottom: 16px;
+  /* Gaps from the screen edges. On an iPhone opened from the home screen the
+     page runs under the notch and home bar, so the "safe-area" amounts keep
+     buttons and text clear of them. Elsewhere they are zero. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --edge-left: calc(16px + env(safe-area-inset-left, 0px));
+  --edge-right: calc(16px + env(safe-area-inset-right, 0px));
+  --edge-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Pure black everywhere: on a projector, anything brighter shows as grey haze. */
@@ -42,13 +43,9 @@ html, body {
 
 #sky {
   position: fixed;
-  top: 0;
-  left: 0;
-  /* Cover the whole screen. "lvh" is the full height on phones, including
-     the strips some iPhones leave out of an ordinary 100% height. */
-  width: 100vw;
-  height: 100vh;
-  height: 100lvh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: block;
   cursor: grab;
   touch-action: none; /* we handle dragging ourselves */
